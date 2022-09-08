@@ -197,7 +197,8 @@ class Well96 (Reformat):
             self.plate_map = self.square_to_long(self.plate_map)
             self.current_map_form == 'long'
         elif self.current_map_form == 'long' and form_change == 'square':
-            self
+            self.plate_map = self.long_to_square(self.plate_map)
+            self.current_map_form == 'square'
 
         if direction == 'Q1':
             # Q1 wells from 384 = [print('%s%02d' % (chr(r), c)) for r in range(65,81,2) for c in range(1, 25,2)]
@@ -220,7 +221,7 @@ class Well96 (Reformat):
             ['%s%02d' % (chr(r), c) for r in range(65,65+8) for c in range(1, 13)],
             ['%s%02d' % (chr(r), c) for r in range(66,81,2) for c in range(2, 25,2)])}
         pass
-  
+
 class Well384(Reformat):
     ''' Object with operations starting from 96 well form '''
 
