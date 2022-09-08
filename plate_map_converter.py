@@ -220,7 +220,7 @@ class Well96 (Reformat):
             ['%s%02d' % (chr(r), c) for r in range(65,65+8) for c in range(1, 13)],
             ['%s%02d' % (chr(r), c) for r in range(66,81,2) for c in range(2, 25,2)])}
         pass
-
+  
 class Well384(Reformat):
     ''' Object with operations starting from 96 well form '''
 
