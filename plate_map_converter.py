@@ -351,7 +351,7 @@ def main(myCommandLine =None):
 
 if __name__ == "__main__":
     # if program is launched alone, this is true and is exececuted. if not, nothing is\
-    # executedf rom this program and instead objects and variables are made available \
+    # executed from this program and instead objects and variables are made available \
     # to the program that imports this.
     main();
     raise SystemExit
