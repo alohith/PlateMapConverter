@@ -156,13 +156,44 @@ class Reformat(object):
         # self.square = square
         pass
 
-    def square_to_long(self, long_map):
-        ''' General method to melt square platemap to long form'''
-        pass
+    def square_to_long(self, square_map):
+        ''' General method to melt square platemap to long form.
+            If alphanumeric Well dataFrame is not in the square map, numerical 
+            Well_X,Well_Y coordinates are needed
+            to map each square form data column to long-from.
+        '''
+        long_out = pd.DataFrame({col:square_map[col].to_numpy().flatten() for
+                                 col in square_map.keys()})
+        if 'Well' not in square_map:
+            long_out['Well'] = ['%s%02d' % (chr(r), c) 
+                                for r in range(65,65+np.max(long_out['Well_X']))
+                                for c in range(1, np.max(long_out['Well_Y']+1))]
+            
+        return long_out
 
-    def long_to_square(self, short_map):
-        ''' General method to stack long platemap into square form '''
-        pass
+    def long_to_square(self, square_map, dimensions):
+        ''' General method to stack long platemap into square form.
+            will return dictionary for each column, with the key as the column header,
+            and the value a square pd.DataFrame of the given dimensions.
+            if no Well column included, a dataFrame called "Well" will be added 
+            to the return dict containing well names in alphanumeric'''
+        dim_x, dim_y = dimensions
+        fieldArrays = dict().fromkeys(square_map.columns.to_list())
+        for field in fieldArrays:
+            if 'Well' not in fieldArrays:
+                squareForm = pd.DataFrame(np.array(['%s%02d' % (chr(r), c) 
+                                                    for r in range(65,65+dim_x) 
+                                                    for c in range(1, dim_y)]).\
+                                                        reshape(dim_x,dim_y),
+                                  index=[chr(r) for r in range(65,65+dim_x)],
+                                  columns=[c for c in range(1,dim_y)])
+                fieldArrays['Well'] = squareForm
+            fieldArrays[field] = pd.DataFrame(square_map[field].to_numpy().\
+                reshape(dim_x,dim_y),
+                index=[chr(r) for r in range(65,65+dim_x)],
+                columns=[c for c in range(1,dim_y)])
+            
+        return fieldArrays
 
     def well_translate(self):
         return NotImplementedError
@@ -171,7 +202,13 @@ class Reformat(object):
         return NotImplementedError
 
 class Well96 (Reformat):
-    ''' Object with operations starting from 96 well form '''
+    ''' Object with operations starting from 96 well form. 
+    SquareForm ouputs/starting:
+        Each sheet refers to one column in a long form platemap.
+        so structure should be a dictionary:
+        {compoundName:pd.DataFrame (shape = (8,12)),
+         concentraion:pd.DataFrame ....}
+        '''
 
     def __init__(self, current_map_form, plate_map):
         self.current_map_form = self.validate_form(plate_map)
@@ -187,55 +224,102 @@ class Well96 (Reformat):
             return "square"
         elif x.shape[0] > 8:
             return "long"
+        else:
+            CommandLine.do_usage_and_die(
+                "96 PlateMap not in an acceptable format (8x12 or long-form)")
+            # SystemExit
 
     def well_translate(self, direction, form_change="long"):
         ''' function that will look at the direction to convert the 96well coord
             to the appropriate 384well coord.
             output will default to long_map form unless otherwise specified.
         '''
+        
+        if direction == 'Q1':
+            # Q1 wells from 384 = [print('%s%02d' % (chr(r), c)) 
+            # for r in range(65,81,2) for c in range(1, 25,2)]
+            well_convert = {well1:(well2,well2[0],well2[1:]) 
+                            for well1,well2 in zip(
+            ['%s%02d' % (chr(r), c) for r in range(65,65+8) 
+                                    for c in range(1, 13)],
+            ['%s%02d' % (chr(r), c) for r in range(65,81,2) 
+                                    for c in range(1, 25,2)])}
+        elif direction == 'Q2':
+            # Q2 wells from 384 = [print('%s%02d' % (chr(r), c)) 
+            # for r in range(65,81,2) for c in range(2, 25,2)]
+            well_convert = {well1:(well2,well2[0],well2[1:]) 
+                            for well1,well2 in zip(
+            ['%s%02d' % (chr(r), c) for r in range(65,65+8) 
+                                    for c in range(1, 13)],
+            ['%s%02d' % (chr(r), c) for r in range(65,81,2) 
+                                    for c in range(2, 25,2)])}
+        elif direction == 'Q3':
+            # Q3 wells from 384 = [print('%s%02d' % (chr(r), c)) 
+            # for r in range(66,81,2) for c in range(1, 25,2)]
+            well_convert = {well1:(well2,well2[0],well2[1:]) 
+                            for well1,well2 in zip(
+            ['%s%02d' % (chr(r), c) for r in range(65,65+8) 
+                                    for c in range(1, 13)],
+            ['%s%02d' % (chr(r), c) for r in range(66,81,2) 
+                                    for c in range(1, 25,2)])}
+        elif direction == 'Q4':
+            # Q4 wells from 384 = [print('%s%02d' % (chr(r), c)) 
+            # for r in range(66,81,2) for c in range(2, 25,2)]
+            well_convert = {well1:(well2,well2[0],well2[1:]) 
+                            for well1,well2 in zip(
+            ['%s%02d' % (chr(r), c) for r in range(65,65+8) 
+                                    for c in range(1, 13)],
+            ['%s%02d' % (chr(r), c) for r in range(66,81,2) 
+                                    for c in range(2, 25,2)])}
+        
         if self.current_map_form == 'square' and form_change == 'long':
             self.plate_map = self.square_to_long(self.plate_map)
             self.current_map_form == 'long'
+            
         elif self.current_map_form == 'long' and form_change == 'square':
-            self.plate_map = self.long_to_square(self.plate_map)
+            self.plate_map = self.long_to_square(self.plate_map,(8,12))
             self.current_map_form == 'square'
-
-        if direction == 'Q1':
-            # Q1 wells from 384 = [print('%s%02d' % (chr(r), c)) for r in range(65,81,2) for c in range(1, 25,2)]
-            well_convert = {well1:(well2,well2[0],well2[1:]) for well1,well2 in zip(
-            ['%s%02d' % (chr(r), c) for r in range(65,65+8) for c in range(1, 13)],
-            ['%s%02d' % (chr(r), c) for r in range(65,81,2) for c in range(1, 25,2)])}
-        elif direction == 'Q2':
-            # Q2 wells from 384 = [print('%s%02d' % (chr(r), c)) for r in range(65,81,2) for c in range(2, 25,2)]
-            well_convert = {well1:(well2,well2[0],well2[1:]) for well1,well2 in zip(
-            ['%s%02d' % (chr(r), c) for r in range(65,65+8) for c in range(1, 13)],
-            ['%s%02d' % (chr(r), c) for r in range(65,81,2) for c in range(2, 25,2)])}
-        elif direction == 'Q3':
-            # Q3 wells from 384 = [print('%s%02d' % (chr(r), c)) for r in range(66,81,2) for c in range(1, 25,2)]
-            well_convert = {well1:(well2,well2[0],well2[1:]) for well1,well2 in zip(
-            ['%s%02d' % (chr(r), c) for r in range(65,65+8) for c in range(1, 13)],
-            ['%s%02d' % (chr(r), c) for r in range(66,81,2) for c in range(1, 25,2)])}
-        elif direction == 'Q4':
-            # Q4 wells from 384 = [print('%s%02d' % (chr(r), c)) for r in range(66,81,2) for c in range(2, 25,2)]
-            well_convert = {well1:(well2,well2[0],well2[1:]) for well1,well2 in zip(
-            ['%s%02d' % (chr(r), c) for r in range(65,65+8) for c in range(1, 13)],
-            ['%s%02d' % (chr(r), c) for r in range(66,81,2) for c in range(2, 25,2)])}
-        pass
+            
+        if self.current_map_form == 'square':
+            return_map = self.plate_map['Well'].\
+                applymap(lambda well: well_convert[well])
+        
+        elif self.current_map_form == 'long':
+            return_map = self.plate_map.copy()
+            return_map['Well'] = return_map['Well'].\
+                map(well_convert,na_action='ignore')
+            
+        return return_map
 
 class Well384(Reformat):
-    ''' Object with operations starting from 96 well form '''
+    ''' Object with operations starting from 384 well form.
+    SquareForm ouputs/starting:
+        Each sheet refers to one column in a long form platemap.
+        so structure should be a dictionary:
+        {compoundName:pd.DataFrame (shape = (16,24)),
+         concentraion:pd.DataFrame ....}
+    
+    '''
 
     def __init__(self, current_map_form, plate_map):
         self.current_map_form = self.validate_form(plate_map)
         super().__init__(self.current_map_form, "384well")
         self.plate_map = plate_map
 
-    def validate_form(self):
+    def validate_form(self,x):
         ''' Determine the form (square or long) of the given platemap to be converted.
             Then determine if number of wells listed is in a valid form (384-wells)
             Default is to make it long format.
         '''
-        pass
+        if x.shape[0] == 16:
+            return "square"
+        elif x.shape[0] > 16:
+            return "long"
+        else:
+            print(
+                "384 PlateMap not in an acceptable format (16x24 or long-form)",
+                file=sys.stderr)
+            SystemExit
 
     def well_translate(self, direction, form_change="long"):
         ''' function that will look at the direction to convert the 96well coord
