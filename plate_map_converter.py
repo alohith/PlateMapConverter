@@ -326,7 +326,7 @@ class Well384(Reformat):
             to the appropriate 384well coord.
             output will default to long_map form unless otherwise specified.
         '''
-
+    
         pass
 
 def main(myCommandLine =None):
