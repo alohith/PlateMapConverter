@@ -151,7 +151,7 @@ def main(inOpts=None):
     index = cl.args.columnIndex
 
     if cl.args.subcommand == "long2square":
-        df = pd.read_excel(inputPath)
+        df = pd.read_csv(inputPath)
 
         if isSquare(df=df):
             print(f"ERROR: {inputPath} is in square form already!", file=sys.stderr)
@@ -167,7 +167,7 @@ def main(inOpts=None):
             sys.exit(1)
     elif cl.args.subcommand == "square2long":
         df = sqaure2platemap(inFile=inputPath, index=index)
-        df.to_excel(outputPath)
+        df.to_csv(outputPath)
     else:
         cl.parser.print_usage(file=sys.stderr)
         sys.exit(1)
