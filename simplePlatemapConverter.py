@@ -14,22 +14,35 @@ class App(ctk.CTk):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.title("Platemap converter")
-        self.geometry("1280x720")
+        self.geometry("400x600")
+        self.titleLab = ctk.CTkLabel(
+            master=self, text="Simple Platemap Converter", font=("Arial", 25, "bold")
+        )
+        self.titleLab.pack(side="top", fill="x", expand=True, padx=20, pady=(15, 5))
 
         self.resizable(width=False, height=False)
 
         self.browse = BrowseFile(master=self)
         self.browse.pack(side="top", pady=15, padx=(5, 5))
 
-        self.inFile = self.browse.filePath.get()
+        self.options = Options(master=self)
+        self.options.pack(side="top", pady=10, padx=10, fill="both", expand=True)
 
+        self.btn_submit = ctk.CTkButton(
+            master=self,
+            width=200,
+            height=35,
+            text="Submit",
+            font=("Arial", 12, "bold"),
+            command=lambda: self.submit(),
+        )
+        self.btn_submit.pack(side="bottom", padx=10, pady=10, fill="x", expand=False)
 
-def main():
-    app = App()
-    app.mainloop()
-
-    return
+    def submit(self):
+        inFile = self.browse.getFilePath
+        print(inFile)
 
 
 if __name__ == "__main__":
-    main()
+    app = App()
+    app.mainloop()
