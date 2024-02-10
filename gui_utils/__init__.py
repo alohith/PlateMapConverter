@@ -7,17 +7,17 @@ class BrowseFile(ctk.CTkFrame):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.titleText = ctk.CTkLabel(
-            master=self, text="File Input", font=("Arial", 20, "bold")
+            master=self, text="File Input", font=("Arial", 25, "bold")
         )
         self.titleText.pack(side="top", padx=5, pady=(5, 10), fill="x", expand=True)
 
         self.filePath = ctk.StringVar()
 
         self.entry = ctk.CTkEntry(self, textvariable=self.filePath, width=200)
-        self.entry.pack(side="left", fill="x", expand=True, padx=2, pady=10)
+        self.entry.pack(side="left", fill="x", expand=True, padx=(10, 5), pady=10)
 
         self.browse_button = ctk.CTkButton(
-            self, text="Browse", command=self.browse_file, font=("Arial", 20, "bold")
+            self, text="Browse", command=self.browse_file, font=("Arial", 14), width=100
         )
         self.browse_button.pack(side="right", padx=(5, 10), pady=10)
 

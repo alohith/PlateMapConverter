@@ -20,9 +20,9 @@ class App(ctk.CTk):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.title("Platemap converter")
-        self.geometry("400x600")
+        self.geometry("500x600")
         self.titleLab = ctk.CTkLabel(
-            master=self, text="Simple Platemap Converter", font=("Arial", 25, "bold")
+            master=self, text="Simple Platemap Converter", font=("Arial", 30, "bold")
         )
         self.titleLab.pack(side="top", fill="x", expand=True, padx=20, pady=(15, 5))
 
