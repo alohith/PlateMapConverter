@@ -1,7 +1,8 @@
-../../../bin/jupyter-trust,sha256=7lMB1vj4-PJcT2Mt1KdFOJ3E9zwLFSJY0vlTMGRHp1k,286
+../../Scripts/jupyter-trust.exe,sha256=8CXAmIaIW0npCNVL439zq6jCN2uCQcEJJGd74mx9j5I,108443
 nbformat-5.9.2.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
 nbformat-5.9.2.dist-info/METADATA,sha256=QwCXVet_wwYSPV3hZ1kvEA3aYw6NRa6TTCJjK2X0_n4,3397
 nbformat-5.9.2.dist-info/RECORD,,
+nbformat-5.9.2.dist-info/REQUESTED,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
 nbformat-5.9.2.dist-info/WHEEL,sha256=9QBuHhg6FNW7lppboF2vKVbCGTVzsFykgRQjjlajrhA,87
 nbformat-5.9.2.dist-info/entry_points.txt,sha256=k6FuCfz2Vasz0iqUe8Lj49QohK7Pzr9ZPvD1w_XKpnk,81
 nbformat-5.9.2.dist-info/licenses/LICENSE,sha256=XKdOTS7rkzCw0SnCX4dNNUShNBO8Yq6NNngZEA0JUHI,1588
