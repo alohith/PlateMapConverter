@@ -2,7 +2,7 @@
 Convert long-form and square form plateMaps with multiple fields for various parameters
 
 ## Version 1 (simple) Pre-Compiled Exectuables 
-
+Top folder where all executables are located is:
 [appDist](appDist/)
 
 ### ARM-MacOS
